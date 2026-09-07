@@ -12,6 +12,7 @@ export default function AiAssistantPage() {
     event.preventDefault();
     setLoading(true);
     setError("");
+    setAnswer("");
     try {
       const data = await apiFetch("/gpt/recommendations", {
         method: "POST",
