@@ -40,6 +40,14 @@ export default function Header() {
           >
             Explore
           </Link>
+          {user && (
+            <Link
+              className={pathname === "/ai-assistant" ? "active" : ""}
+              href="/ai-assistant"
+            >
+              AI assistant
+            </Link>
+          )}
           {user?.role === "student" && (
             <Link
               className={pathname === "/my-learning" ? "active" : ""}
