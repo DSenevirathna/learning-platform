@@ -1,9 +1,9 @@
 const OpenAI = require("openai");
 const Course = require("../models/Course");
 
-const openai = process.env.OPENAI_API_KEY
-  ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
-  : null;
+const apiKey = process.env.OPENAI_API_KEY?.replace(/\s+/g, "");
+
+const openai = apiKey ? new OpenAI({ apiKey }) : null;
 let requestCount = 0;
 const REQUEST_LIMIT = 250;
 
@@ -25,7 +25,7 @@ async function getCourseRecommendations(req, res, next) {
   try {
     const availableCourses = await Course.find({}, "title description").lean();
     const response = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
+      model: "gpt-4o-mini",
       messages: [
         {
           role: "system",
