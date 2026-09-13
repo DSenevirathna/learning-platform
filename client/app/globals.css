@@ -49,6 +49,11 @@ button { cursor: pointer; }
 .course-meta { display: flex; align-items: center; justify-content: space-between; margin-top: auto; padding-top: 26px; color: var(--muted); font-size: 12px; }
 .course-meta strong { color: var(--ink); font-size: 13px; }
 .card-link { color: var(--green); font-weight: 700; }
+.progress-block { margin-top: 22px; }
+.progress-label { display: flex; justify-content: space-between; color: var(--muted); font-size: 12px; font-weight: 700; }
+.progress-track { height: 7px; margin-top: 8px; overflow: hidden; background: #e8eee9; border-radius: 99px; }
+.progress-fill { display: block; height: 100%; background: var(--green); border-radius: inherit; transition: width .25s ease; }
+.progress-button { width: 100%; margin-top: 12px; }
 .status-message { margin: 24px 0 0; padding: 14px 16px; color: #21533c; background: #e3f4e7; border: 1px solid #b8dec1; border-radius: 7px; font-size: 14px; }
 .error-message { margin: 18px 0 0; padding: 13px 15px; color: #9b372d; background: #fff0ee; border: 1px solid #f1c5be; border-radius: 7px; font-size: 14px; }
 .empty-state { padding: 50px 20px; color: var(--muted); text-align: center; background: var(--white); border: 1px dashed #b9c8bc; border-radius: 12px; }

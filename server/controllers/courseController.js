@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const Course = require("../models/Course");
+const User = require("../models/User");
 
 function isValidId(id) {
   return mongoose.Types.ObjectId.isValid(id);
@@ -133,10 +134,72 @@ async function enrollInCourse(req, res, next) {
 
 async function getEnrolledCourses(req, res, next) {
   try {
-    const courses = await Course.find({ enrolledStudents: req.user.id })
+    const [courses, user] = await Promise.all([
+      Course.find({ enrolledStudents: req.user.id })
       .populate("instructor", "username role")
-      .sort({ createdAt: -1 });
-    res.json({ courses });
+      .sort({ createdAt: -1 }),
+      User.findById(req.user.id).select("courseProgress").lean(),
+    ]);
+    const progress = new Map(
+      (user?.courseProgress || []).map((item) => [
+        item.course.toString(),
+        { completed: item.completed, completedAt: item.completedAt },
+      ]),
+    );
+
+    const coursesWithProgress = courses.map((course) => ({
+      ...course.toObject(),
+      progress: progress.get(course._id.toString()) || { completed: false },
+    }));
+    res.json({ courses: coursesWithProgress });
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function updateCourseProgress(req, res, next) {
+  try {
+    if (!isValidId(req.params.id)) {
+      return res.status(400).json({ message: "Invalid course ID." });
+    }
+
+    const completed = req.body?.completed;
+    if (typeof completed !== "boolean") {
+      return res.status(400).json({ message: "Completed must be a boolean." });
+    }
+
+    const course = await Course.findOne({
+      _id: req.params.id,
+      enrolledStudents: req.user.id,
+    }).select("_id");
+    if (!course) {
+      return res.status(404).json({ message: "Enrolled course not found." });
+    }
+
+    const user = await User.findById(req.user.id);
+    const existing = user.courseProgress.find(
+      (item) => item.course.toString() === req.params.id,
+    );
+    if (existing) {
+      existing.completed = completed;
+      existing.completedAt = completed ? new Date() : undefined;
+    } else {
+      user.courseProgress.push({
+        course: course._id,
+        completed,
+        completedAt: completed ? new Date() : undefined,
+      });
+    }
+    await user.save();
+
+    res.json({
+      progress: {
+        completed,
+        completedAt: completed ? user.courseProgress.find(
+          (item) => item.course.toString() === req.params.id,
+        ).completedAt : null,
+      },
+    });
   } catch (error) {
     next(error);
   }
@@ -151,4 +214,5 @@ module.exports = {
   getInstructorCourses,
   enrollInCourse,
   getEnrolledCourses,
+  updateCourseProgress,
 };

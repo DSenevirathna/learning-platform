@@ -10,6 +10,7 @@ export default function MyLearningPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [signedIn, setSignedIn] = useState(false);
+  const [updating, setUpdating] = useState("");
   useEffect(() => {
     const token = localStorage.getItem("token");
     setSignedIn(Boolean(token));
@@ -22,6 +23,26 @@ export default function MyLearningPage() {
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
   }, []);
+  async function toggleProgress(course) {
+    const completed = !course.progress?.completed;
+    setUpdating(course._id);
+    setError("");
+    try {
+      const data = await apiFetch(`/students/progress/${course._id}`, {
+        method: "PUT",
+        body: JSON.stringify({ completed }),
+      });
+      setCourses((current) =>
+        current.map((item) =>
+          item._id === course._id ? { ...item, progress: data.progress } : item,
+        ),
+      );
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setUpdating("");
+    }
+  }
   return (
     <div className="page-shell">
       <p className="eyebrow">Your learning</p>
@@ -43,7 +64,14 @@ export default function MyLearningPage() {
       ) : courses.length ? (
         <div className="course-grid" style={{ marginTop: 48 }}>
           {courses.map((course) => (
-            <CourseCard key={course._id} course={course} enrolled />
+            <CourseCard
+              key={course._id}
+              course={course}
+              enrolled
+              progress={course.progress}
+              onProgress={() => toggleProgress(course)}
+              updatingProgress={updating === course._id}
+            />
           ))}
         </div>
       ) : (
