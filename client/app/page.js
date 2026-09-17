@@ -31,10 +31,10 @@ export default function HomePage() {
           </p>
 
           <div className="hero-actions">
-            <Link className="button button-dark button-small" href="/courses">
+            <Link className="button button-green button-small" href="/courses">
               Explore courses
             </Link>
-            <Link className="button button-ghost button-small" href="/register">
+            <Link className="button button-green button-small" href="/register">
               Join free
             </Link>
           </div>

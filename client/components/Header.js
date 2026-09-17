@@ -75,7 +75,7 @@ export default function Header() {
                 {user.username}
               </span>
               <button
-                className="button button-ghost button-small"
+                className="button button-green button-small"
                 onClick={logout}
               >
                 Log out
@@ -83,11 +83,11 @@ export default function Header() {
             </>
           ) : (
             <>
-              <Link className="button button-ghost button-small" href="/login">
+              <Link className="button button-green button-small" href="/login">
                 Log in
               </Link>
               <Link
-                className="button button-dark button-small"
+                className="button button-green button-small"
                 href="/register"
               >
                 Join free

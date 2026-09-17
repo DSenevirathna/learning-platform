@@ -56,10 +56,7 @@ export default function CourseDetailsPage() {
         </div>
         <aside className="detail-panel">
           <p className="eyebrow">Ready when you are</p>
-          <p>
-            Learn at your own pace with guidance from{" "}
-            {course.instructor?.username || "your instructor"}.
-          </p>
+
           {notice && <div className="status-message">{notice}</div>}
           <button className="button button-green" onClick={enroll}>
             Enroll in this course

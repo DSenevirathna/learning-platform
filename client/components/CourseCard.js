@@ -43,7 +43,6 @@ export default function CourseCard({
         </div>
       )}
       <div className="course-meta">
-        <span>By {course.instructor?.username || "Lumen instructor"}</span>
         {enrolled ? (
           <span className="card-link">Enrolled</span>
         ) : onEnroll ? (

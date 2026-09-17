@@ -1,30 +1,37 @@
 "use client";
 
 import { useState } from "react";
+import CourseCard from "../../components/CourseCard";
 import { apiFetch } from "../../lib/api";
 
 export default function AiAssistantPage() {
   const [prompt, setPrompt] = useState("");
-  const [answer, setAnswer] = useState("");
+  const [recommendations, setRecommendations] = useState([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
   async function ask(event) {
     event.preventDefault();
     setLoading(true);
     setError("");
-    setAnswer("");
+    setRecommendations([]);
+
     try {
       const data = await apiFetch("/gpt/recommendations", {
         method: "POST",
         body: JSON.stringify({ prompt }),
       });
-      setAnswer(data.recommendations);
+      const nextRecommendations = Array.isArray(data.recommendations)
+        ? data.recommendations
+        : [];
+      setRecommendations(nextRecommendations);
     } catch (err) {
       setError(err.message);
     } finally {
       setLoading(false);
     }
   }
+
   return (
     <div className="page-shell">
       <p className="eyebrow">Lumen guide</p>
@@ -47,13 +54,22 @@ export default function AiAssistantPage() {
           {loading ? "Thinking..." : "Find my courses"}
         </button>
       </form>
+
       {error && <div className="error-message">{error}</div>}
-      {answer && (
-        <div
-          className="status-message"
-          style={{ maxWidth: 680, whiteSpace: "pre-wrap" }}
-        >
-          {answer}
+
+      {recommendations.length > 0 && (
+        <div style={{ maxWidth: 1100, marginTop: 32 }}>
+          <div className="section-heading" style={{ marginBottom: 20 }}>
+            <div>
+              <p className="eyebrow">Recommended for you</p>
+              <h2>Courses that match your goals</h2>
+            </div>
+          </div>
+          <div className="course-grid">
+            {recommendations.map((course) => (
+              <CourseCard key={course._id || course.title} course={course} />
+            ))}
+          </div>
         </div>
       )}
     </div>
